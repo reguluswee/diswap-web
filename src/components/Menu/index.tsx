@@ -1,6 +1,5 @@
 import React, { useRef } from 'react'
-// import { Info, PieChart } from 'react-feather'
-import { Info } from 'react-feather'
+import { Info, PieChart } from 'react-feather'
 import styled from 'styled-components'
 import { ReactComponent as MenuIcon } from '../../assets/images/menu.svg'
 import { useOnClickOutside } from '../../hooks/useOnClickOutside'
@@ -95,12 +94,12 @@ export default function Menu() {
         <MenuFlyout>
           <MenuItem id="link" href="https://dischain.xyz/">
             <Info size={14} />
-            About
+            DISChain
           </MenuItem>
-          {/* <MenuItem id="link" href="https://uniswap.info/">
+          <MenuItem id="link" href="https://uniswap.info/">
             <PieChart size={14} />
             Analytics
-          </MenuItem> */}
+          </MenuItem>
         </MenuFlyout>
       )}
     </StyledMenu>

@@ -57,15 +57,17 @@ export default function VersionSwitch() {
 
   const handleClick = useCallback(
     e => {
-      if (!versionSwitchAvailable) e.preventDefault()
+      e.preventDefault();
+      if (!versionSwitchAvailable || version === Version.v1) {
+        //
+      }
     },
     [versionSwitchAvailable]
   )
 
   const toggle = (
-    <VersionToggle enabled={versionSwitchAvailable} to={toggleDest} onClick={handleClick}>
-      <VersionLabel enabled={version === Version.v2 || !versionSwitchAvailable}>V2</VersionLabel>
-      <VersionLabel enabled={version === Version.v1 && versionSwitchAvailable}>V1</VersionLabel>
+    <VersionToggle enabled={versionSwitchAvailable && version !== Version.v1} to={toggleDest} onClick={handleClick}>
+      {versionSwitchAvailable && <VersionLabel enabled={version === Version.v2}>V2</VersionLabel>}
     </VersionToggle>
   )
   return versionSwitchAvailable ? (
