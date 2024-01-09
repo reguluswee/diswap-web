@@ -1,23 +1,23 @@
 import { ChainId } from '@diswap/sdk'
-import React from 'react'
+import React, { useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { Text } from 'rebass'
 
 import styled from 'styled-components'
 
 import Logo from '../../assets/svg/logo.svg'
-import LogoDark from '../../assets/svg/logo_white.svg'
+import LogoDark from '../../assets/images/logo.png'
 import { useActiveWeb3React } from '../../hooks'
 import { useDarkModeManager } from '../../state/user/hooks'
 import { useETHBalances } from '../../state/wallet/hooks'
 
 import { YellowCard } from '../Card'
 import Settings from '../Settings'
-import Menu from '../Menu'
 
 import Row, { RowBetween } from '../Row'
 import Web3Status from '../Web3Status'
-import VersionSwitch from './VersionSwitch'
+import { NavLink } from 'react-router-dom'
+import Modal from '../../components/Modal'
 
 const HeaderFrame = styled.div`
   display: flex;
@@ -38,6 +38,32 @@ const HeaderFrame = styled.div`
 const HeaderElement = styled.div`
   display: flex;
   align-items: center;
+  gap: 16px;
+`
+
+const HeaderNav = styled(NavLink)`
+  color: ${({ theme }) => theme.text2};
+  font-weight: 500;
+  :hover {
+    color: ${({ theme }) => theme.text1};
+    cursor: pointer;
+  }
+`
+
+const HeaderNavFun = styled.div`
+  color: ${({ theme }) => theme.text2};
+  font-weight: 500;
+  text-decoration: underline;
+  :hover {
+    color: ${({ theme }) => theme.text1};
+    cursor: pointer;
+  }
+`
+
+const ComingSoon = styled.div`
+  color: ${({ theme }) => theme.text2};
+  font-weight: 500;
+  padding: 16px;
 `
 
 const HeaderElementWrap = styled.div`
@@ -100,14 +126,6 @@ const UniIcon = styled.div`
   :hover {
     transform: rotate(-5deg);
   }
-  img {
-    width: 7.2rem;
-  }
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    img { 
-      width: 4.5rem;
-    }
-  `};
 `
 
 const HeaderControls = styled.div`
@@ -141,6 +159,14 @@ export default function Header() {
 
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const [isDark] = useDarkModeManager()
+  const [isOpen, setIsOpen] = useState(false)
+
+  const showModal = () => {
+    setIsOpen(true)
+    setTimeout(() => {
+      setIsOpen(false)
+    }, 2000);
+  }
 
   return (
     <HeaderFrame>
@@ -148,12 +174,16 @@ export default function Header() {
         <HeaderElement>
           <Title href=".">
             <UniIcon>
-              <img src={isDark ? LogoDark : Logo} alt="logo" />
+              <img src={isDark ? LogoDark : Logo} style={{'width': isDark?'2rem':'7.2rem'}} alt="logo" />
             </UniIcon>
             <TitleText>
               {/* <img style={{ marginLeft: '4px', marginTop: '4px' }} src={isDark ? WordmarkDark : Wordmark} alt="logo" /> */}
             </TitleText>
           </Title>
+          <HeaderNav to="/">Index</HeaderNav>
+          <HeaderNav to="/swap">Swap</HeaderNav>
+          <HeaderNav to="/pool">Liquidity</HeaderNav>
+          <HeaderNavFun onClick={showModal}>Infos</HeaderNavFun>
         </HeaderElement>
         <HeaderControls>
           <HeaderElement>
@@ -170,11 +200,15 @@ export default function Header() {
             </AccountElement>
           </HeaderElement>
           <HeaderElementWrap>
-            <VersionSwitch />
+            {/* <VersionSwitch /> */}
             <Settings />
-            <Menu />
+            {/* <Menu /> */}
           </HeaderElementWrap>
         </HeaderControls>
+
+        <Modal isOpen={isOpen} onDismiss={() => setIsOpen(false)}>
+          <ComingSoon>Coming soon, stay tuned for the launch!</ComingSoon>
+        </Modal>
       </RowBetween>
     </HeaderFrame>
   )

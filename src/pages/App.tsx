@@ -3,6 +3,7 @@ import { HashRouter, Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import GoogleAnalyticsReporter from '../components/analytics/GoogleAnalyticsReporter'
 import Header from '../components/Header'
+import Footer from '../components/Footer'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
@@ -27,6 +28,7 @@ const AppWrapper = styled.div`
   flex-flow: column;
   align-items: flex-start;
   overflow-x: hidden;
+  min-height: 100vh;
 `
 
 const HeaderWrapper = styled.div`
@@ -51,6 +53,13 @@ const BodyWrapper = styled.div`
   `};
 
   z-index: 1;
+`
+
+const FooterWrapper =  styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  margin-top: auto;
 `
 
 const Marginer = styled.div`
@@ -90,6 +99,9 @@ export default function App() {
             </Web3ReactManager>
             <Marginer />
           </BodyWrapper>
+          <FooterWrapper>
+            <Footer />
+          </FooterWrapper>
         </AppWrapper>
       </HashRouter>
     </Suspense>
