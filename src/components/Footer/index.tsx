@@ -26,8 +26,8 @@ export default function Header() {
     return (
         <FooterWrapper>
             <HeaderLinkNav id="link" href="https://dischain.xyz/">DISChain</HeaderLinkNav>
-            <HeaderLinkNav id="link" href="https://dischain.xyz/" style={{fontSize: '22px', margin: '0 0 0 auto'}}><Telegram/></HeaderLinkNav>
-            <HeaderLinkNav id="link" href="https://dischain.xyz/" style={{fontSize: '20px', margin: '0 0 0 10px'}}><Twitter/></HeaderLinkNav>
+            <HeaderLinkNav id="link" href="#" style={{fontSize: '22px', margin: '0 0 0 auto'}}><Telegram/></HeaderLinkNav>
+            <HeaderLinkNav id="link" href="https://twitter.com/diswap_global" style={{fontSize: '20px', margin: '0 0 0 10px'}}><Twitter/></HeaderLinkNav>
         </FooterWrapper>
     )
 }
