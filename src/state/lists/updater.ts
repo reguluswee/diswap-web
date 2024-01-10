@@ -78,8 +78,6 @@ export default function Updater(): null {
             break
 
           case VersionUpgrade.MAJOR:
-            console.log('bump:: 默认 acceptListUpdate>>', bump)
-            dispatch(acceptListUpdate(listUrl))
             dispatch(
               addPopup({
                 key: listUrl,
