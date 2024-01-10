@@ -41,10 +41,12 @@ export default function Updater(): null {
 
   // automatically update lists if versions are minor/patch
   useEffect(() => {
+    console.log('VersionUpgrade::::::', VersionUpgrade)
     Object.keys(lists).forEach(listUrl => {
       const list = lists[listUrl]
       if (list.current && list.pendingUpdate) {
         const bump = getVersionUpgrade(list.current.version, list.pendingUpdate.version)
+        console.log('bump>>', bump)
         switch (bump) {
           case VersionUpgrade.NONE:
             throw new Error('unexpected no version bump')
@@ -53,6 +55,7 @@ export default function Updater(): null {
             const min = minVersionBump(list.current.tokens, list.pendingUpdate.tokens)
             // automatically update minor/patch as long as bump matches the min update
             if (bump >= min) {
+              
               dispatch(acceptListUpdate(listUrl))
               dispatch(
                 addPopup({
@@ -75,6 +78,8 @@ export default function Updater(): null {
             break
 
           case VersionUpgrade.MAJOR:
+            console.log('bump:: 默认 acceptListUpdate>>', bump)
+            dispatch(acceptListUpdate(listUrl))
             dispatch(
               addPopup({
                 key: listUrl,
