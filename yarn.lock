@@ -1186,10 +1186,10 @@
     debug "^3.1.0"
     lodash.once "^4.1.1"
 
-"@diswap/sdk@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.npmjs.org/@diswap/sdk/-/sdk-1.0.2.tgz#c7330e067a4b7600bce8bdff033cf931606bba70"
-  integrity sha512-j7yjjzKWX5qYkZ5TIT3G9TvinL45Lf6xk2ruH6U7O0UabcFDPJB9Ew+3/UtYrNgTjDtKRzxCHDIwmYCSq2O2Lg==
+"@diswap/sdk@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/@diswap/sdk/-/sdk-1.0.4.tgz#46a61c7e3e4459f7a54a894178b60c6370a9acfa"
+  integrity sha512-IFWEp1wkIrzI+M2btRVRTT3hZhTk/3CbbcFCJCjaYLuotfPUCt6WIzO8Rczof6DkpKUr+dkDhAqcMBt8B92eWQ==
   dependencies:
     "@uniswap/v2-core" "^1.0.0"
     big.js "^5.2.2"
