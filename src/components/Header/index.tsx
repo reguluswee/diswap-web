@@ -1,5 +1,5 @@
 import { ChainId } from '@diswap/sdk'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { isMobile } from 'react-device-detect'
 import { Text } from 'rebass'
 
@@ -50,15 +50,15 @@ const HeaderNav = styled(NavLink)`
   }
 `
 
-const HeaderNavFun = styled.div`
-  color: ${({ theme }) => theme.text2};
-  font-weight: 500;
-  text-decoration: underline;
-  :hover {
-    color: ${({ theme }) => theme.text1};
-    cursor: pointer;
-  }
-`
+// const HeaderNavFun = styled.div`
+//   color: ${({ theme }) => theme.text2};
+//   font-weight: 500;
+//   text-decoration: underline;
+//   :hover {
+//     color: ${({ theme }) => theme.text1};
+//     cursor: pointer;
+//   }
+// `
 
 const ComingSoon = styled.div`
   color: ${({ theme }) => theme.text2};
@@ -156,17 +156,22 @@ const NETWORK_LABELS: { [chainId in ChainId]: string | null } = {
 
 export default function Header() {
   const { account, chainId } = useActiveWeb3React()
-
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const [isDark] = useDarkModeManager()
   const [isOpen, setIsOpen] = useState(false)
 
-  const showModal = () => {
-    setIsOpen(true)
-    setTimeout(() => {
-      setIsOpen(false)
-    }, 2000);
-  }
+  // const showModal = () => {
+  //   setIsOpen(true)
+  //   setTimeout(() => {
+  //     setIsOpen(false)
+  //   }, 2000);
+  // }
+
+  // 添加 useEffect 钩子
+  useEffect(() => {
+    // 在这里执行与 useActiveWeb3React 相关的操作
+    console.log('useActiveWeb3React updated:', { account, chainId });
+  }, [account, chainId]);
 
   return (
     <HeaderFrame>
@@ -183,7 +188,8 @@ export default function Header() {
           <HeaderNav to="/">Index</HeaderNav>
           <HeaderNav to="/swap">Swap</HeaderNav>
           <HeaderNav to="/pool">Liquidity</HeaderNav>
-          <HeaderNavFun onClick={showModal}>Infos</HeaderNavFun>
+          <HeaderNav to="/airdrop">Airdrop</HeaderNav>
+          {/* <HeaderNavFun onClick={showModal}>Infos</HeaderNavFun> */}
         </HeaderElement>
         <HeaderControls>
           <HeaderElement>

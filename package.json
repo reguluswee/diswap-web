@@ -3,7 +3,9 @@
   "description": "Uniswap Interface",
   "homepage": ".",
   "private": true,
+  "proxy": "http://10.17.16.114:8088",
   "devDependencies": {
+    "@diswap/sdk": "^1.0.4",
     "@ethersproject/experimental": "^5.0.1",
     "@popperjs/core": "^2.4.4",
     "@reach/dialog": "^0.10.3",
@@ -77,8 +79,7 @@
     "serve": "^11.3.0",
     "start-server-and-test": "^1.11.0",
     "styled-components": "^4.2.0",
-    "typescript": "^3.8.3",
-    "@diswap/sdk" : "^1.0.4"
+    "typescript": "^3.8.3"
   },
   "resolutions": {
     "@walletconnect/web3-provider": "1.1.1-alpha.0"
@@ -106,5 +107,8 @@
       "last 1 safari version"
     ]
   },
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "js-md5": "^0.8.3"
+  }
 }
