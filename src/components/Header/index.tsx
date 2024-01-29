@@ -188,7 +188,7 @@ export default function Header() {
           <HeaderNav to="/">Index</HeaderNav>
           <HeaderNav to="/swap">Swap</HeaderNav>
           <HeaderNav to="/pool">Liquidity</HeaderNav>
-          <HeaderNav to="/airdrop">Airdrop</HeaderNav>
+          {/* <HeaderNav to="/airdrop">Airdrop</HeaderNav> */}
           {/* <HeaderNavFun onClick={showModal}>Infos</HeaderNavFun> */}
         </HeaderElement>
         <HeaderControls>
