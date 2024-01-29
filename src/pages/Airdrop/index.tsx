@@ -41,7 +41,7 @@ const Airdrop = () => {
   const [claimed, setClaimed] = useState<boolean>(false)
   const [isSuccess, setIsSuccess] = useState<boolean|null>(null)
   const history = useHistory();
-  const ADDRESS = '0xe49E5c52c7135B55eb4E72f64f047A55AaC8EF4C'
+  const ADDRESS = '0x70662Eb36228dDC7C81051F00e5F5153d3F7897C'
   let airdropContract = useAirdropContract(ADDRESS, true)
 
   const handleCheckWhite = () => {
