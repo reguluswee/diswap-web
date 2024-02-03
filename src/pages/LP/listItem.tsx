@@ -1,11 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { ButtonPrimary } from '../../components/Button';
+import { useTokenContract } from '../../hooks/useContract'
 
-const ListItem = () => {
+interface ListItemProps {
+    onCheck: (e: any) => void;
+    address: string;
+}
+export default function ListItem({
+    onCheck,
+    address
+}: ListItemProps) {
+    const [name, setName] = useState<string>('')
+    const contract = useTokenContract(address)
+
+    const readContract = async () => {
+        let result = await contract?.name()
+        setName(result)
+    }   
+
+    useEffect(() => {
+        readContract()
+    }, [])
+    
     return (
-        <LpItem>
-            <LpButton>LP-Token1</LpButton>
+        <LpItem onClick={() => {onCheck(contract)}}>
+            <LpButton>{ name }</LpButton>
             <Description>5% Pay</Description>
         </LpItem>
     )
@@ -28,4 +48,3 @@ const Description = styled.div`
     color: ${({ theme }) => theme.text2}
 `
 
-export default ListItem

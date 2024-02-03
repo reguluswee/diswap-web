@@ -69,7 +69,7 @@ const Airdrop = () => {
     if (proofLoading) return;
     setProofLoading(true)
     getMakerProof({
-      address: account 
+      address: checkWhiteResult?.address 
     }).then(res => {
       if (res.code == 200) {
         setProofResult(res.data.proof)     

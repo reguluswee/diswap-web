@@ -1,12 +1,38 @@
-import React, { Fragment, useState, useCallback } from "react";
+import React, { Fragment, useState, useCallback, useEffect, useRef } from "react";
 import styled from 'styled-components';
+import ethers from 'ethers';
 import { ButtonPrimary, ButtonSecondary } from '../../components/Button';
 import { Input as NumericalInput } from '../../components/NumericalInput'
+import { Contract } from '@ethersproject/contracts'
+import { useActiveWeb3React } from '../../hooks'
+import { useLPContract } from '../../hooks/useContract'
 import ListItem from './listItem'
+import IncomeItem from "./incomeItem";
+import Loader from '../../components/Loader'
+
+interface CurrentObject {
+    name?: string;
+    amount?: string | number;
+    showAmount?: string | number
+}
 
 export default function LP() {
+    const { account, library } = useActiveWeb3React()
     const [value, setValue] = useState<number | string>('')
-    const [day, setDay] = useState<number | string>(30)
+    const [readLoading, setReadLoading] = useState<boolean>(false)
+    const [currentContract, setCurrentContract] = useState<Contract | null>(null)
+    const [currentInfo, setCurrentInfo] = useState<CurrentObject>({ name: '--', showAmount: '--' })
+    const isFirstLoad = useRef(true);
+    const [deadlineDays, setDeadlineDays] = useState<number | string>(30)
+    const [pledgeLoading, setPledgeLoading] = useState<boolean>(false)
+    const LPAddress = '0x8d64F2abC7bAf00F5c845372EE7aa388Ab5a23e4'
+    const LPContract = useLPContract(LPAddress)
+
+    // token list 地址
+    const tokenList = [
+        '0x57b0Edf3897477A2068de53D0c53812d8a278b03',
+        '0xC828727FBe8232D10C62DD359F9Aa4aD7c8B5Ea5'
+    ]
     
     const handleTypeInput = useCallback(
         (value: string) => {
@@ -17,14 +43,86 @@ export default function LP() {
     
     const handleTypeDay = useCallback(
         (value: string) => {
-            setDay(value)
+            setDeadlineDays(value)
         },
-        [day]
+        [deadlineDays]
     )
 
-    const handleMaxInput = useCallback(() => {
-        // TODO:
-    }, [value])
+    const handleMaxInput = () => {
+        if (currentInfo) {
+            setValue(currentInfo.showAmount || "");
+        }
+    }
+
+    // 选择 token
+    const getTokenItem = async (e: any) => {
+        console.log(':::::e:', e)
+        setCurrentContract(e)
+        setReadLoading(true)
+    }
+    const handleClaim = (e: any) => {
+        console.log('....>>e:', e)
+    }
+
+    const handlePledge = async () => {
+        try {
+            setPledgeLoading(true)
+            const yieldArgs = [currentContract?.address, ethers.utils.parseEther(value.toString()).toString(), Number(deadlineDays)*60*60]
+            console.log('yieldArgs::', yieldArgs)
+
+            // let config = await LPContract?.lpTokenConfig(yieldArgs[0])
+            // console.log('config:', config)
+            // const gasLimit = await LPContract?.estimateGas.goYield(...yieldArgs)
+
+            const nonce = await library?.getTransactionCount(account ?? '');
+            const transaction = await LPContract?.goYield(...yieldArgs, {
+                gasLimit: 300000,
+                from: account, 
+                nonce: nonce,
+            })
+
+            let r = await transaction.wait()
+
+            if (r && r.status === 1) {
+                setPledgeLoading(false)
+                console.log("Transaction successful"); 
+            } else {
+                setPledgeLoading(false)
+                console.error("Transaction failed");
+            }
+        } catch (err) {
+            console.log('er:', err)
+            setPledgeLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                let name = await currentContract?.name();
+                let amount = await currentContract?.balanceOf(account);
+                setCurrentInfo({
+                    ...currentInfo,
+                    name: name,
+                    amount: amount.toString(),
+                    showAmount: ethers.utils.formatUnits(ethers.BigNumber.from(amount.toString()), 18),
+                });
+            } catch (error) {
+                // 处理错误
+                console.error('Error fetching data:', error);
+            } finally {
+                setReadLoading(false);
+            }
+        };
+
+        // 初次加载时不执行
+        if (!isFirstLoad.current) {
+            fetchData();
+        } else {
+            isFirstLoad.current = false;
+        }
+    
+    }, [currentContract])
 
     return (
         <Fragment>
@@ -32,20 +130,16 @@ export default function LP() {
 
                 <LpList>
                     <Title>Liquidity Mining Tokens</Title>
-                    <ListItem />
-                    <LpItem>
-                        <LpButton>LP-Token1</LpButton>
-                        <Description>5% Pay</Description>
-                    </LpItem>
-                    <LpItem>
-                        <LpButton>LP-Token1</LpButton>
-                        <Description>5% Pay</Description>
-                    </LpItem>
+                    {
+                        tokenList.map((item: string) => {
+                            return <ListItem onCheck={getTokenItem} address={item} key={item} />
+                        })
+                    }
                 </LpList>
 
                 <LPMain>
-                    <TitleSe>Token: LP-Token1</TitleSe>
-                    <TitleSe>LP Balance: 121212</TitleSe>
+                    <TitleSe>Token: { readLoading ? <Loader size="12px" />  : currentInfo?.name }</TitleSe>
+                    <TitleSe>Balance: { readLoading ? <Loader size="12px" />  : currentInfo?.showAmount }</TitleSe>
                     <InputWrapper>
                         <NumericalInputWrapper
                             className="amount-input"
@@ -57,56 +151,32 @@ export default function LP() {
                         <StyledBalanceMax onClick={handleMaxInput}>MAX</StyledBalanceMax>
                     </InputWrapper>
                     <InputWrapper>
-                        <DayButton onClick={handleMaxInput}>30</DayButton>
-                        <DayButton onClick={handleMaxInput}>50</DayButton>
+                        <DayButton onClick={() => handleTypeDay('30') }>30</DayButton>
+                        <DayButton onClick={() => handleTypeDay('50') }>50</DayButton>
                         <NumericalInputWrapper
                             style={{'width': '60px', 'textAlign': 'right'}}
-                            value={day}
+                            value={deadlineDays}
                             onUserInput={val => {
                                 handleTypeDay(val)
                             }}
                         />
                         <Description style={{'marginTop': '10px'}}>days Deadline</Description>
                     </InputWrapper>
-                    <PledgeButton>Pledge</PledgeButton>
+                    <PledgeButton onClick={() => handlePledge() } disabled={pledgeLoading}>
+                        {pledgeLoading?<Loader size="14px" />:''}
+                        Pledge
+                    </PledgeButton>
                 </LPMain>
 
                 <RewardWrapper>
                     <Title>Pledge income</Title>
                     <IncomeWrapper>
-                        <IncomeItemWrapper>
-                            <IncomeItem>
-                                <Description>LP-Token1:</Description>
-                                <Description>Deadline: 2024-22-22</Description>
-                                <Description style={{'marginLeft': 'auto'}}>Income: 23232323</Description>
-                            </IncomeItem>
-                            <IncomeItem>
-                                <IncomeButton>Cliam</IncomeButton>
-                                <IncomeButton>Retracement</IncomeButton>
-                            </IncomeItem>
-                        </IncomeItemWrapper>
-                        <IncomeItemWrapper>
-                            <IncomeItem>
-                                <Description>LP-Token1:</Description>
-                                <Description>Deadline: 2024-22-22</Description>
-                                <Description style={{'marginLeft': 'auto'}}>Income: 23232323</Description>
-                            </IncomeItem>
-                            <IncomeItem>
-                                <IncomeButton>Cliam</IncomeButton>
-                                <IncomeButton>Retracement</IncomeButton>
-                            </IncomeItem>
-                        </IncomeItemWrapper>
-                        <IncomeItemWrapper>
-                            <IncomeItem>
-                                <Description>LP-Token1:</Description>
-                                <Description>Deadline: 2024-22-22</Description>
-                                <Description style={{'marginLeft': 'auto'}}>Income: 23232323</Description>
-                            </IncomeItem>
-                            <IncomeItem>
-                                <IncomeButton>Cliam</IncomeButton>
-                                <IncomeButton>Retracement</IncomeButton>
-                            </IncomeItem>
-                        </IncomeItemWrapper>
+                        {/* {
+                            tokenList.map((item: number) => {
+                                return <IncomeItem onClaim={handleClaim} />
+                            })
+                        } */}
+                        <IncomeItem onClaim={handleClaim} />
                     </IncomeWrapper>
                 </RewardWrapper>
             </LPWrapper>
@@ -127,18 +197,7 @@ const LpList = styled.div`
     width: 33%;
     padding: 0 12px;
     overflow-y: scroll;
-`
-const LpItem = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 12px;
-`
-const LpButton = styled(ButtonPrimary)`
-    padding: 5px 14px;
-    font-size: 14px;
-    border-radius: 8px;
-    width: auto;
+    max-height: 340px;
 `
 const Title = styled.div`
     font-size: 18px;
@@ -192,21 +251,7 @@ const RewardWrapper = styled.div`
 `
 const IncomeWrapper = styled.div`
     overflow-y: scroll;
-`
-const IncomeItemWrapper = styled.div`
-    border-bottom: 1px solid ${({theme}) => theme.bg3};
-`
-const IncomeItem = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 12px 0;
-`
-const IncomeButton = styled(ButtonPrimary)`
-    padding: 5px 14px;
-    font-size: 12px;
-    border-radius: 8px;
-    width: auto;
+    max-height: 340px;
 `
 const StyledBalanceMax = styled.button`
   height: 30px;
